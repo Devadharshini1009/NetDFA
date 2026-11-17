@@ -1,70 +1,123 @@
 import React from 'react';
-import { Shield, GitBranch, Cpu, Network } from 'lucide-react';
+import { Globe, GitBranch, Cpu, Network } from 'lucide-react';
 
 export const Footer = () => {
   return (
     <footer
       style={{
         borderTop: '1px solid var(--border-subtle)',
-        background: 'rgba(3, 7, 18, 0.95)',
-        padding: '2.5rem 0 1.5rem',
-        marginTop: '4rem',
+        backgroundColor: '#ffffff',
+        padding: '2.5rem 0 1.75rem',
+        marginTop: '3.5rem',
       }}
     >
       <div className="container">
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
             gap: '2rem',
             marginBottom: '2rem',
           }}
         >
+          {/* Column 1: Brand & Purpose */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-              <Shield size={20} color="var(--cyan-accent)" />
-              <span style={{ fontWeight: '800', fontSize: '1.1rem', color: 'var(--text-main)' }}>
-                Net<span style={{ color: 'var(--cyan-accent)' }}>DFA</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem' }}>
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '6px',
+                  backgroundColor: 'var(--primary-light)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--primary)',
+                }}
+              >
+                <Globe size={14} />
+              </div>
+              <span style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--text-main)' }}>
+                Net<span style={{ color: 'var(--primary)' }}>DFA</span>
               </span>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
-              An interdisciplinary computer science project combining Full Stack Web Development, Computer Networks, and Formal Languages & Automata Theory into an enterprise-grade DNS research platform.
+              An academic and professional DNS analysis platform integrating Full Stack Web Development, Computer Networks, and Formal Languages & Automata Theory.
             </p>
           </div>
 
+          {/* Column 2: Academic Pillars */}
           <div>
-            <h4 style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: '700', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
-              ACADEMIC PILLARS
+            <h4
+              style={{
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                color: 'var(--text-main)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '0.75rem',
+              }}
+            >
+              Academic Pillars
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Cpu size={14} color="var(--cyan-accent)" />
-                <span><strong>FSWD:</strong> React 18, Node.js, Express, MongoDB</span>
+            <ul
+              style={{
+                listStyle: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.45rem',
+                fontSize: '0.85rem',
+                color: 'var(--text-body)',
+              }}
+            >
+              <li style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Cpu size={14} color="var(--primary)" />
+                <span><strong>FSWD:</strong> React 18, Express, Node.js, MongoDB</span>
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Network size={14} color="var(--blue-accent)" />
-                <span><strong>CN:</strong> Native OS Stub Resolver, RFC 1035 RRs</span>
+              <li style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Network size={14} color="var(--teal-accent)" />
+                <span><strong>CN:</strong> Native OS Resolver, RFC 1035 Resource Records</span>
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <GitBranch size={14} color="#818cf8" />
-                <span><strong>FLAT:</strong> Deterministic Finite Automaton (DFA) M</span>
+              <li style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <GitBranch size={14} color="#6366f1" />
+                <span><strong>FLAT:</strong> 4-State Deterministic Finite Automaton (M)</span>
               </li>
             </ul>
           </div>
 
+          {/* Column 3: Standards */}
           <div>
-            <h4 style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: '700', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
-              DNS STANDARDS & SPECIFICATIONS
+            <h4
+              style={{
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                color: 'var(--text-main)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '0.75rem',
+              }}
+            >
+              Specifications & RFCs
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)' }}>
-              <span>• RFC 1034: Domain Concepts and Facilities</span>
-              <span>• RFC 1035: Implementation and Specification</span>
-              <span>• RFC 1123: Host Requirements & Label Rules</span>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.35rem',
+                fontSize: '0.8rem',
+                color: 'var(--text-muted)',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              <span>• RFC 1034 — Concepts & Facilities</span>
+              <span>• RFC 1035 — Implementation & Specification</span>
+              <span>• RFC 1123 — Host Requirements & Labels</span>
               <span>• Chomsky Type-3 Regular Grammars</span>
             </div>
           </div>
         </div>
 
+        {/* Bottom bar */}
         <div
           style={{
             borderTop: '1px solid var(--border-subtle)',
@@ -75,14 +128,14 @@ export const Footer = () => {
             fontSize: '0.8rem',
             color: 'var(--text-subtle)',
             flexWrap: 'wrap',
-            gap: '1rem',
+            gap: '0.75rem',
           }}
         >
           <div>
-            College Interdisciplinary Project — Domain Name Validation and DNS Lookup Tool
+            Domain Name Validation and DNS Lookup System • College Project
           </div>
           <div style={{ fontFamily: 'var(--font-mono)' }}>
-            Status: Production Ready • OS Resolver Active
+            System Status: Operational
           </div>
         </div>
       </div>

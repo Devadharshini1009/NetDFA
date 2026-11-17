@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Shield, Network, Activity, History, BookOpen, Database } from 'lucide-react';
+import { Globe, Activity, Network, History, BookOpen, Database, Menu, X } from 'lucide-react';
 import { fetchHealthApi } from '../services/api';
 
 export const Navbar = () => {
   const [health, setHealth] = useState({ status: 'CHECKING', database: { connected: false } });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -24,147 +25,239 @@ export const Navbar = () => {
   const isServerOk = health.status === 'OK';
   const isDbOk = health.database?.connected;
 
+  const navItems = [
+    { to: '/', label: 'Dashboard', icon: <Activity size={16} /> },
+    { to: '/workbench', label: 'Workbench', icon: <Network size={16} /> },
+    { to: '/history', label: 'History', icon: <History size={16} /> },
+    { to: '/theory', label: 'Theory', icon: <BookOpen size={16} /> },
+  ];
+
   return (
     <header
       style={{
         borderBottom: '1px solid var(--border-subtle)',
-        background: 'rgba(3, 7, 18, 0.85)',
-        backdropFilter: 'blur(16px)',
+        backgroundColor: '#ffffff',
         position: 'sticky',
         top: 0,
         zIndex: 50,
       }}
     >
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '70px' }}>
-        {/* Logo */}
-        <NavLink to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+      <div
+        className="container"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: '64px',
+        }}
+      >
+        {/* Brand */}
+        <NavLink
+          to="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            textDecoration: 'none',
+          }}
+        >
           <div
             style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, rgba(0, 245, 212, 0.2), rgba(56, 189, 248, 0.2))',
-              border: '1px solid var(--border-active)',
+              width: '34px',
+              height: '34px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--primary-light)',
+              border: '1px solid var(--primary-border)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              color: 'var(--primary)',
             }}
           >
-            <Shield size={22} color="var(--cyan-accent)" />
+            <Globe size={19} />
           </div>
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: '800', letterSpacing: '0.05em', color: 'var(--text-main)' }}>
-                Net<span style={{ color: 'var(--cyan-accent)' }}>DFA</span>
+              <span
+                style={{
+                  fontSize: '1.15rem',
+                  fontWeight: '700',
+                  color: 'var(--text-main)',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Net<span style={{ color: 'var(--primary)' }}>DFA</span>
               </span>
               <span
                 style={{
-                  fontSize: '0.65rem',
-                  padding: '0.1rem 0.35rem',
-                  background: 'rgba(56, 189, 248, 0.15)',
-                  color: 'var(--blue-accent)',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  padding: '0.1rem 0.4rem',
+                  backgroundColor: 'var(--bg-surface)',
+                  color: 'var(--text-muted)',
                   borderRadius: '4px',
                   fontFamily: 'var(--font-mono)',
-                  fontWeight: '700',
                 }}
               >
                 v1.0
               </span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-              DNS Resolver & Automata Engine
-            </div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: '1' }}>
+              DNS & Automata Platform
+            </span>
           </div>
         </NavLink>
 
-        {/* Navigation Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <NavLink
-            to="/"
-            className={({ isActive }) => `btn ${isActive ? 'btn-secondary' : 'btn-outline'}`}
-            style={{ padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
-          >
-            <Activity size={15} />
-            <span>Dashboard</span>
-          </NavLink>
-
-          <NavLink
-            to="/workbench"
-            className={({ isActive }) => `btn ${isActive ? 'btn-secondary' : 'btn-outline'}`}
-            style={{ padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
-          >
-            <Network size={15} />
-            <span>Workbench</span>
-          </NavLink>
-
-          <NavLink
-            to="/history"
-            className={({ isActive }) => `btn ${isActive ? 'btn-secondary' : 'btn-outline'}`}
-            style={{ padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
-          >
-            <History size={15} />
-            <span>History</span>
-          </NavLink>
-
-          <NavLink
-            to="/theory"
-            className={({ isActive }) => `btn ${isActive ? 'btn-secondary' : 'btn-outline'}`}
-            style={{ padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
-          >
-            <BookOpen size={15} />
-            <span>Theory (FLAT/CN)</span>
-          </NavLink>
+        {/* Desktop Navigation Links */}
+        <nav
+          style={{
+            display: 'none',
+            alignItems: 'center',
+            gap: '0.35rem',
+          }}
+          className="desktop-nav"
+        >
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                isActive ? 'btn btn-secondary' : 'btn btn-outline'
+              }
+              style={{
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.875rem',
+                border: 'none',
+                boxShadow: 'none',
+              }}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
         </nav>
 
-        {/* System Status Indicators */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        {/* System Health Indicators */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+          }}
+        >
+          {/* DB Badge */}
           <div
-            title={isDbOk ? 'MongoDB Connected' : 'MongoDB Offline (Read/Write disabled)'}
+            title={isDbOk ? 'MongoDB Connected' : 'MongoDB Disconnected'}
             style={{
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '0.35rem',
-              padding: '0.3rem 0.6rem',
+              padding: '0.25rem 0.55rem',
               borderRadius: '6px',
               fontSize: '0.75rem',
               fontFamily: 'var(--font-mono)',
-              background: 'rgba(11, 19, 43, 0.6)',
-              border: `1px solid ${isDbOk ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`,
-              color: isDbOk ? '#10b981' : '#f59e0b',
+              fontWeight: '500',
+              backgroundColor: isDbOk ? '#ecfdf5' : '#fffbeb',
+              border: `1px solid ${isDbOk ? '#a7f3d0' : '#fde68a'}`,
+              color: isDbOk ? '#059669' : '#d97706',
             }}
           >
-            <Database size={13} />
-            <span>DB: {isDbOk ? 'Online' : 'Offline'}</span>
+            <Database size={12} />
+            <span style={{ display: 'none' }} className="status-label">DB: </span>
+            <span>{isDbOk ? 'DB Online' : 'DB Offline'}</span>
           </div>
 
+          {/* API Badge */}
           <div
-            title={`Backend Server: ${isServerOk ? 'Online' : 'Offline'}`}
+            title={`Backend Service: ${isServerOk ? 'Operational' : 'Offline'}`}
             style={{
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '0.4rem',
-              padding: '0.3rem 0.6rem',
+              padding: '0.25rem 0.55rem',
               borderRadius: '6px',
               fontSize: '0.75rem',
               fontFamily: 'var(--font-mono)',
-              background: 'rgba(11, 19, 43, 0.6)',
-              border: `1px solid ${isServerOk ? 'rgba(0, 245, 212, 0.4)' : 'rgba(244, 63, 94, 0.4)'}`,
-              color: isServerOk ? 'var(--cyan-accent)' : '#f43f5e',
+              fontWeight: '500',
+              backgroundColor: isServerOk ? '#f0f9ff' : '#fef2f2',
+              border: `1px solid ${isServerOk ? '#bae6fd' : '#fecaca'}`,
+              color: isServerOk ? '#0284c7' : '#dc2626',
             }}
           >
             <span
               style={{
-                width: '7px',
-                height: '7px',
+                width: '6px',
+                height: '6px',
                 borderRadius: '50%',
-                background: isServerOk ? 'var(--cyan-accent)' : '#f43f5e',
-                boxShadow: isServerOk ? '0 0 8px var(--cyan-accent)' : 'none',
+                backgroundColor: isServerOk ? '#0284c7' : '#dc2626',
               }}
             />
-            <span>API: {isServerOk ? '5000' : 'Down'}</span>
+            <span>{isServerOk ? 'API Ready' : 'API Down'}</span>
           </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="btn btn-outline"
+            style={{
+              display: 'inline-flex',
+              padding: '0.4rem 0.55rem',
+              border: '1px solid var(--border-subtle)',
+            }}
+            aria-label="Toggle Navigation"
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Dropdown Navigation */}
+      {mobileMenuOpen && (
+        <div
+          style={{
+            backgroundColor: '#ffffff',
+            borderTop: '1px solid var(--border-subtle)',
+            padding: '0.75rem 1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.4rem',
+          }}
+        >
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                isActive ? 'btn btn-secondary' : 'btn btn-outline'
+              }
+              style={{
+                justifyContent: 'flex-start',
+                padding: '0.6rem 0.85rem',
+                border: 'none',
+              }}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
+      )}
+
+      {/* Style for responsive navbar display */}
+      <style>{`
+        @media (min-width: 768px) {
+          .desktop-nav {
+            display: flex !important;
+          }
+          header button[aria-label="Toggle Navigation"] {
+            display: none !important;
+          }
+          .status-label {
+            display: inline !important;
+          }
+        }
+      `}</style>
     </header>
   );
 };

@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-import { Copy, Check, Server, Mail, Globe, Hash, FileText, ArrowRight } from 'lucide-react';
+import { Copy, Check, Server, Globe, Mail, Hash, ArrowRight, FileText } from 'lucide-react';
 
 export const RecordCard = ({ type, data, errorInfo }) => {
   const [copied, setCopied] = useState(false);
 
   const getCardIcon = () => {
     switch (type) {
-      case 'A': return <Server size={18} color="var(--cyan-accent)" />;
-      case 'AAAA': return <Globe size={18} color="#818cf8" />;
-      case 'MX': return <Mail size={18} color="#f59e0b" />;
-      case 'NS': return <Hash size={18} color="var(--blue-accent)" />;
-      case 'CNAME': return <ArrowRight size={18} color="#ec4899" />;
-      case 'TXT': return <FileText size={18} color="#a855f7" />;
-      default: return <Server size={18} />;
+      case 'A': return <Server size={16} color="var(--primary)" />;
+      case 'AAAA': return <Globe size={16} color="#6366f1" />;
+      case 'MX': return <Mail size={16} color="#d97706" />;
+      case 'NS': return <Hash size={16} color="var(--teal-accent)" />;
+      case 'CNAME': return <ArrowRight size={16} color="#ec4899" />;
+      case 'TXT': return <FileText size={16} color="#8b5cf6" />;
+      default: return <Server size={16} />;
     }
   };
 
   const getRecordTitle = () => {
     switch (type) {
-      case 'A': return 'A Record — IPv4 Host Address';
-      case 'AAAA': return 'AAAA Record — IPv6 Host Address';
-      case 'MX': return 'MX Record — Mail Exchange Servers';
-      case 'NS': return 'NS Record — Authoritative Name Servers';
-      case 'CNAME': return 'CNAME Record — Canonical Name Alias';
-      case 'TXT': return 'TXT Record — Text / SPF / DKIM Verification';
-      default: return `${type} Record`;
+      case 'A': return 'IPv4 Host Address';
+      case 'AAAA': return 'IPv6 Host Address';
+      case 'MX': return 'Mail Exchange Servers';
+      case 'NS': return 'Authoritative Name Servers';
+      case 'CNAME': return 'Canonical Name Alias';
+      case 'TXT': return 'Text & Verification Records';
+      default: return `${type} Records`;
     }
   };
 
@@ -46,21 +46,56 @@ export const RecordCard = ({ type, data, errorInfo }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        minHeight: '160px',
-        borderLeft: `4px solid ${isAvailable ? 'var(--cyan-accent)' : 'var(--border-subtle)'}`,
+        minHeight: '170px',
+        backgroundColor: '#ffffff',
       }}
     >
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '0.85rem',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {getCardIcon()}
+            <div
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '6px',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-subtle)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {getCardIcon()}
+            </div>
             <div>
-              <span style={{ fontWeight: '700', fontSize: '0.95rem', color: 'var(--text-main)' }}>
-                {type}
-              </span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                {getRecordTitle().split('—')[1]}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: '700',
+                    fontSize: '0.9rem',
+                    color: 'var(--text-main)',
+                  }}
+                >
+                  {type}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {getRecordTitle()}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -68,20 +103,24 @@ export const RecordCard = ({ type, data, errorInfo }) => {
             <button
               onClick={handleCopy}
               className="btn btn-outline"
-              style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+              style={{
+                padding: '0.2rem 0.5rem',
+                fontSize: '0.75rem',
+                borderRadius: '4px',
+              }}
               title="Copy Record Data"
             >
-              {copied ? <Check size={13} color="var(--cyan-accent)" /> : <Copy size={13} />}
+              {copied ? <Check size={12} color="var(--status-success)" /> : <Copy size={12} />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
           )}
         </div>
 
-        {/* Content Section */}
+        {/* Record Values Content */}
         {isAvailable ? (
-          <div style={{ marginTop: '0.5rem' }}>
+          <div style={{ marginTop: '0.35rem' }}>
             {type === 'MX' && Array.isArray(data) ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 {data.map((mx, i) => (
                   <div
                     key={i}
@@ -89,24 +128,31 @@ export const RecordCard = ({ type, data, errorInfo }) => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: 'rgba(3, 7, 18, 0.5)',
-                      padding: '0.4rem 0.6rem',
-                      borderRadius: '6px',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-subtle)',
+                      padding: '0.35rem 0.6rem',
+                      borderRadius: '5px',
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.8rem',
                     }}
                   >
-                    <span style={{ color: 'var(--text-main)' }}>{mx.exchange}</span>
+                    <span style={{ color: 'var(--text-main)', wordBreak: 'break-all' }}>
+                      {mx.exchange}
+                    </span>
                     <span
                       style={{
-                        color: '#f59e0b',
-                        background: 'rgba(245, 158, 11, 0.1)',
-                        padding: '0.1rem 0.4rem',
+                        color: '#b45309',
+                        backgroundColor: '#fffbeb',
+                        border: '1px solid #fde68a',
+                        padding: '0.05rem 0.4rem',
                         borderRadius: '4px',
-                        fontSize: '0.75rem',
+                        fontSize: '0.7rem',
+                        fontWeight: '600',
+                        whiteSpace: 'nowrap',
+                        marginLeft: '0.5rem',
                       }}
                     >
-                      Priority: {mx.priority}
+                      Priority {mx.priority}
                     </span>
                   </div>
                 ))}
@@ -117,9 +163,10 @@ export const RecordCard = ({ type, data, errorInfo }) => {
                   <div
                     key={i}
                     style={{
-                      background: 'rgba(3, 7, 18, 0.5)',
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-subtle)',
                       padding: '0.35rem 0.6rem',
-                      borderRadius: '6px',
+                      borderRadius: '5px',
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.8rem',
                       color: 'var(--text-main)',
@@ -133,11 +180,12 @@ export const RecordCard = ({ type, data, errorInfo }) => {
             ) : (
               <div
                 style={{
-                  background: 'rgba(3, 7, 18, 0.5)',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '6px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-subtle)',
+                  padding: '0.45rem 0.65rem',
+                  borderRadius: '5px',
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '0.85rem',
+                  fontSize: '0.8rem',
                   color: 'var(--text-main)',
                   wordBreak: 'break-all',
                 }}
@@ -149,37 +197,38 @@ export const RecordCard = ({ type, data, errorInfo }) => {
         ) : (
           <div
             style={{
-              padding: '0.75rem',
-              background: 'rgba(11, 19, 43, 0.3)',
+              padding: '0.65rem 0.85rem',
+              backgroundColor: 'var(--bg-secondary)',
               borderRadius: '6px',
               border: '1px dashed var(--border-subtle)',
-              marginTop: '0.5rem',
+              marginTop: '0.35rem',
             }}
           >
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', fontStyle: 'italic' }}>
-              {errorInfo?.reason || `No ${type} record found for this domain (ENODATA).`}
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-subtle)' }}>
+              {errorInfo?.reason || `No ${type} record published for this domain (ENODATA).`}
             </div>
           </div>
         )}
       </div>
 
+      {/* Footer Info */}
       <div
         style={{
-          marginTop: '0.75rem',
-          paddingTop: '0.5rem',
+          marginTop: '0.85rem',
+          paddingTop: '0.55rem',
           borderTop: '1px solid var(--border-subtle)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           fontSize: '0.75rem',
-          color: 'var(--text-subtle)',
+          color: 'var(--text-muted)',
         }}
       >
-        <span>Type: {type}</span>
+        <span style={{ fontFamily: 'var(--font-mono)' }}>Type {type}</span>
         <span>
           {isAvailable ? (
-            <span style={{ color: 'var(--cyan-accent)', fontWeight: '600' }}>
-              ● {Array.isArray(data) ? `${data.length} entries` : 'Available'}
+            <span style={{ color: 'var(--status-success)', fontWeight: '600' }}>
+              ● {Array.isArray(data) ? `${data.length} ${data.length === 1 ? 'entry' : 'entries'}` : 'Available'}
             </span>
           ) : (
             <span style={{ color: 'var(--text-subtle)' }}>○ Not Published</span>

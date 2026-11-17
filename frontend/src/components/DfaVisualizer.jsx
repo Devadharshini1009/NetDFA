@@ -1,52 +1,62 @@
 import React, { useState } from 'react';
-import { Activity, Clock, Terminal, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { GitBranch, Clock, ChevronDown, ChevronUp, ArrowRight, Check } from 'lucide-react';
 
 export const DfaVisualizer = ({ currentState, transitions = [] }) => {
   const [showLog, setShowLog] = useState(false);
 
   // States definition
   const states = [
-    { code: 'S0', name: 'INPUT', label: 'S0: User Input', desc: 'Awaiting domain submission' },
-    { code: 'S1', name: 'VALIDATION', label: 'S1: Lexical Check', desc: 'RFC 1035 regex analysis' },
-    { code: 'S2', name: 'DNS_QUERY', label: 'S2: DNS Query', desc: 'Concurrent stub resolution' },
-    { code: 'S3', name: 'RESULT', label: 'S3: Results (F)', desc: 'Telemetry & synthesis', isAccepting: true },
+    { code: 'S0', name: 'INPUT', label: 'User Input', desc: 'Awaiting domain submission' },
+    { code: 'S1', name: 'VALIDATION', label: 'Lexical Syntax', desc: 'RFC 1035 regex analysis' },
+    { code: 'S2', name: 'DNS_QUERY', label: 'DNS Resolution', desc: 'Concurrent stub queries' },
+    { code: 'S3', name: 'RESULT', label: 'Result Synthesis', desc: 'Output & audit logging', isAccepting: true },
   ];
 
-  // Helper to check if state is active
+  // Helper to determine active state code
   const activeCode = currentState?.code || (transitions.length > 0 ? transitions[transitions.length - 1].toState : 'S0');
 
   return (
-    <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+    <div className="glass-panel" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.5rem', backgroundColor: '#ffffff' }}>
+      {/* Title & Controls */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+        }}
+      >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Activity size={18} color="var(--cyan-accent)" />
-            <h3 style={{ fontSize: '1rem', fontWeight: '700', letterSpacing: '0.05em', color: 'var(--text-main)' }}>
-              DETERMINISTIC FINITE AUTOMATON (DFA) STATE TRACKER
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <GitBranch size={17} color="var(--primary)" />
+            <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--text-main)', letterSpacing: '-0.01em' }}>
+              DFA State Machine Controller
             </h3>
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-            Formal Automata Model: <code>M = (Q, Σ, δ, q0, F)</code> — FLAT Integration
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+            Formal Model: <code style={{ color: 'var(--primary)', fontWeight: '600' }}>M = (Q, Σ, δ, q0, F)</code> — FLAT Process Orchestration
           </p>
         </div>
 
         <button
           className="btn btn-outline"
           onClick={() => setShowLog(!showLog)}
-          style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+          style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}
         >
-          <Clock size={14} />
-          <span>Transition Log ({transitions.length})</span>
-          {showLog ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          <Clock size={13} />
+          <span>Transition Audit ({transitions.length})</span>
+          {showLog ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
         </button>
       </div>
 
-      {/* DFA Nodes Diagram */}
+      {/* Clean 4-State Pipeline Diagram */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-          gap: '1rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '0.75rem',
           position: 'relative',
         }}
       >
@@ -56,24 +66,24 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
             <div
               key={st.code}
               style={{
-                background: isActive ? 'rgba(0, 245, 212, 0.08)' : 'rgba(11, 19, 43, 0.4)',
-                border: `2px ${st.isAccepting ? 'double' : 'solid'} ${
-                  isActive ? 'var(--cyan-accent)' : 'rgba(56, 189, 248, 0.2)'
+                backgroundColor: isActive ? 'var(--primary-light)' : 'var(--bg-secondary)',
+                border: `${st.isAccepting ? '2px double' : '1px solid'} ${
+                  isActive ? 'var(--primary)' : 'var(--border-subtle)'
                 }`,
-                borderRadius: '10px',
-                padding: '1rem',
+                borderRadius: '8px',
+                padding: '0.9rem',
                 position: 'relative',
-                transition: 'all 0.3s ease',
-                boxShadow: isActive ? '0 0 15px rgba(0, 245, 212, 0.3)' : 'none',
+                transition: 'all 0.15s ease',
+                boxShadow: isActive ? '0 1px 3px 0 rgba(2, 132, 199, 0.15)' : 'none',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                 <span
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontWeight: '800',
-                    fontSize: '1rem',
-                    color: isActive ? 'var(--cyan-accent)' : 'var(--blue-accent)',
+                    fontWeight: '700',
+                    fontSize: '0.85rem',
+                    color: isActive ? 'var(--primary)' : 'var(--text-main)',
                   }}
                 >
                   {st.code}
@@ -82,17 +92,17 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
                 {isActive && (
                   <span
                     style={{
-                      background: 'var(--cyan-accent)',
-                      color: '#030712',
+                      backgroundColor: 'var(--primary)',
+                      color: '#ffffff',
                       fontSize: '0.65rem',
-                      fontWeight: '800',
-                      padding: '0.15rem 0.4rem',
+                      fontWeight: '600',
+                      padding: '0.1rem 0.4rem',
                       borderRadius: '4px',
                       fontFamily: 'var(--font-mono)',
-                      letterSpacing: '0.05em',
+                      letterSpacing: '0.02em',
                     }}
                   >
-                    ACTIVE STATE
+                    ACTIVE
                   </span>
                 )}
 
@@ -100,10 +110,11 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
                   <span
                     style={{
                       border: '1px solid var(--border-subtle)',
-                      color: 'var(--text-subtle)',
+                      backgroundColor: '#ffffff',
+                      color: 'var(--text-muted)',
                       fontSize: '0.65rem',
                       fontWeight: '600',
-                      padding: '0.1rem 0.35rem',
+                      padding: '0.08rem 0.35rem',
                       borderRadius: '4px',
                       fontFamily: 'var(--font-mono)',
                     }}
@@ -113,11 +124,11 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
                 )}
               </div>
 
-              <div style={{ marginTop: '0.5rem', fontWeight: '600', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+              <div style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-main)' }}>
                 {st.name}
               </div>
 
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
                 {st.desc}
               </div>
             </div>
@@ -129,20 +140,20 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
       {showLog && (
         <div
           style={{
-            marginTop: '1.25rem',
-            paddingTop: '1.25rem',
+            marginTop: '1rem',
+            paddingTop: '1rem',
             borderTop: '1px solid var(--border-subtle)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
-            <Terminal size={15} color="var(--blue-accent)" />
-            <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--blue-accent)' }}>
-              STATE TRANSITION AUDIT TRAIL
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.65rem' }}>
+            <Clock size={14} color="var(--primary)" />
+            <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>
+              Execution Trace & Transition Sequence
             </span>
           </div>
 
           {transitions.length === 0 ? (
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
               No state transitions executed yet. Machine resting at initial state S0.
             </div>
           ) : (
@@ -150,8 +161,8 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.5rem',
-                maxHeight: '220px',
+                gap: '0.4rem',
+                maxHeight: '200px',
                 overflowY: 'auto',
               }}
             >
@@ -162,35 +173,39 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '0.5rem 0.75rem',
-                    background: 'rgba(3, 7, 18, 0.6)',
+                    padding: '0.45rem 0.75rem',
+                    backgroundColor: 'var(--bg-secondary)',
                     border: '1px solid var(--border-subtle)',
                     borderRadius: '6px',
-                    fontSize: '0.8rem',
+                    fontSize: '0.75rem',
                     fontFamily: 'var(--font-mono)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span style={{ color: 'var(--cyan-accent)', fontWeight: '700' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <span style={{ color: 'var(--primary)', fontWeight: '700' }}>
                       #{item.step || idx + 1}
                     </span>
-                    <span style={{ color: 'var(--text-main)' }}>
-                      {item.fromState ? `${item.fromState} → ${item.toState}` : `Initial: ${item.toState}`}
+                    <span style={{ color: 'var(--text-main)', fontWeight: '600' }}>
+                      {item.fromState ? `${item.fromState} → ${item.toState}` : `Initial ${item.toState}`}
                     </span>
                     <span
                       style={{
-                        padding: '0.1rem 0.4rem',
-                        background: 'rgba(56, 189, 248, 0.15)',
-                        color: 'var(--blue-accent)',
-                        borderRadius: '4px',
-                        fontSize: '0.75rem',
+                        padding: '0.05rem 0.35rem',
+                        backgroundColor: 'var(--primary-light)',
+                        border: '1px solid var(--primary-border)',
+                        color: 'var(--primary)',
+                        borderRadius: '3px',
+                        fontSize: '0.7rem',
                       }}
                     >
                       {item.symbol}
                     </span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'none' }} className="trace-desc">
+                      {item.description}
+                    </span>
                   </div>
 
-                  <span style={{ color: 'var(--text-subtle)', fontSize: '0.75rem' }}>
+                  <span style={{ color: 'var(--text-subtle)', fontSize: '0.7rem' }}>
                     {item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : ''}
                   </span>
                 </div>
@@ -199,6 +214,14 @@ export const DfaVisualizer = ({ currentState, transitions = [] }) => {
           )}
         </div>
       )}
+
+      <style>{`
+        @media (min-width: 640px) {
+          .trace-desc {
+            display: inline !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
