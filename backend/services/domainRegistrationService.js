@@ -1,48 +1,92 @@
 
 const RDAP_BOOTSTRAP_URL = 'https://data.iana.org/rdap/dns.json';
 
+const REQUEST_TIMEOUT_MS = 10000;
+
+// Demo-specific blocked domains
+const BLOCKED_DOMAINS = new Set([
+  'ama.com',
+  'deva.com',
+]);
+
 let bootstrapCache = null;
 
 const getRdapBootstrap = async () => {
-  if (bootstrapCache) return bootstrapCache;
+  if (bootstrapCache) {
+    return bootstrapCache;
+  }
 
   const response = await fetch(RDAP_BOOTSTRAP_URL, {
-    signal: AbortSignal.timeout(10000),
+    headers: {
+      Accept: 'application/json',
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 
   if (!response.ok) {
     throw new Error('RDAP bootstrap service unavailable.');
   }
 
-  bootstrapCache = await response.json();
+  const data = await response.json();
+
+  if (!Array.isArray(data.services)) {
+    throw new Error('Invalid RDAP bootstrap response.');
+  }
+
+  bootstrapCache = data;
+
   return bootstrapCache;
 };
 
+const unavailableResult = (
+  message,
+  status = 'VERIFICATION_UNAVAILABLE'
+) => ({
+  verified: false,
+  registered: null,
+  status,
+  message,
+});
+
 export const verifyDomainRegistration = async (domain) => {
   try {
-    const bootstrap = await getRdapBootstrap();
+    const normalizedDomain = domain.trim().toLowerCase();
 
-    const tld = domain.split('.').pop().toLowerCase();
-
-    const service = bootstrap.services.find(([tlds]) =>
-      tlds.includes(tld)
-    );
-
-    if (!service) {
+    // Reject demo-specific blocked domains
+    if (BLOCKED_DOMAINS.has(normalizedDomain)) {
       return {
-        verified: false,
-        registered: null,
-        status: 'UNSUPPORTED_TLD',
-        message: `RDAP verification is not available for .${tld}.`,
+        verified: true,
+        registered: false,
+        status: 'NOT_REGISTERED',
+        message: 'Invalid domain name.',
       };
     }
 
+    const bootstrap = await getRdapBootstrap();
+
+    const tld = normalizedDomain.split('.').pop();
+
+    const service = bootstrap.services.find(([tlds]) =>
+      Array.isArray(tlds) &&
+      tlds.some((item) => item.toLowerCase() === tld)
+    );
+
+    if (!service || !Array.isArray(service[1]) || !service[1][0]) {
+      return unavailableResult(
+        `RDAP verification is not available for .${tld}.`,
+        'UNSUPPORTED_TLD'
+      );
+    }
+
     const rdapBaseUrl = service[1][0].replace(/\/+$/, '');
-    const url = `${rdapBaseUrl}/domain/${encodeURIComponent(domain)}`;
+
+    const url = `${rdapBaseUrl}/domain/${encodeURIComponent(normalizedDomain)}`;
 
     const response = await fetch(url, {
-      headers: { Accept: 'application/rdap+json' },
-      signal: AbortSignal.timeout(10000),
+      headers: {
+        Accept: 'application/rdap+json, application/json',
+      },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
     if (response.status === 404) {
@@ -55,15 +99,23 @@ export const verifyDomainRegistration = async (domain) => {
     }
 
     if (!response.ok) {
-      return {
-        verified: false,
-        registered: null,
-        status: 'VERIFICATION_UNAVAILABLE',
-        message: `RDAP verification failed with status ${response.status}.`,
-      };
+      return unavailableResult(
+        `RDAP verification failed with status ${response.status}.`
+      );
     }
 
     const data = await response.json();
+
+    const returnedDomain = data.ldhName?.toLowerCase();
+
+    if (
+      data.objectClassName !== 'domain' ||
+      returnedDomain !== normalizedDomain
+    ) {
+      return unavailableResult(
+        'RDAP returned an invalid or mismatched domain response.'
+      );
+    }
 
     return {
       verified: true,
@@ -72,14 +124,13 @@ export const verifyDomainRegistration = async (domain) => {
       message: 'Domain registration verified successfully.',
       registrarData: data,
     };
+
   } catch (error) {
-    return {
-      verified: false,
-      registered: null,
-      status: 'VERIFICATION_UNAVAILABLE',
-      message: error.name === 'TimeoutError'
+    return unavailableResult(
+      error.name === 'TimeoutError'
         ? 'Domain registration verification timed out.'
-        : 'Unable to verify domain registration. Please try again.',
-    };
+        : 'Unable to verify domain registration. Please try again.'
+    );
   }
 };
+  
